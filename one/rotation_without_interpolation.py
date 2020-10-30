@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 
-image = cv.imread('data/Elaine.jpg', cv.IMREAD_GRAYSCALE)
+image = cv.imread('../data/Elaine.jpg', cv.IMREAD_GRAYSCALE)
 teta = -np.pi / 6
 transform = np.array([[np.cos(teta), -np.sin(teta), 0], [np.sin(teta), np.cos(teta), 0], [0, 0, 1]])
 
