@@ -57,6 +57,8 @@ normal_mse = []
 for i in range(len(levels)):
     mse.append(np.mean(np.square(np.subtract(image, quantized_images[i]))))
     normal_mse.append(np.mean(np.square(np.subtract(normal_image, normal_quantized_images[i]))))
+    cv.imwrite("../output/quantized_level_{}.jpg".format(levels[i]), quantized_images[i])
+    cv.imwrite("../output/normaled_quantized_level_{}.jpg".format(levels[i]), normal_quantized_images[i])
 
 print("level", end=" ")
 for i in range(len(levels)):

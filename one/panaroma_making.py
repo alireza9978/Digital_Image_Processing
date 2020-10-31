@@ -22,14 +22,42 @@ c = np.array(c)
 c1_c4 = np.linalg.inv(coe).dot(b)
 c5_c8 = np.linalg.inv(coe).dot(c)
 
-(max_x, max_y, c) = car_two.shape
-x, y = symbols('x y')
-eq1 = Eq(c1_c4[0] * x + c1_c4[1] * y + c1_c4[2] * x * y + c1_c4[3], max_x)
-eq2 = Eq(c5_c8[0] * x + c5_c8[1] * y + c5_c8[2] * x * y + c5_c8[3], max_y)
-temp = solve((eq1, eq2), (x, y))
+image_two_corners = [[0, 0], [0, car_two.shape[0]], [car_two.shape[1], 0], [car_two.shape[0], car_two.shape[1]]]
+image_two_transformed_corners = []
+for point in image_two_corners:
+    x, y = symbols('x y')
+    eq1 = Eq(c1_c4[0] * x + c1_c4[1] * y + c1_c4[2] * x * y + c1_c4[3], point[0])
+    eq2 = Eq(c5_c8[0] * x + c5_c8[1] * y + c5_c8[2] * x * y + c5_c8[3], point[1])
+    temp = solve((eq1, eq2), (x, y))
+    image_two_transformed_corners.append(temp[0])
 
-new_image_width = int(round(temp[0][0]))
-new_image_height = int(round(temp[0][1]))
+max_x = 0
+min_x = 0
+max_y = 0
+min_y = 0
+for point in image_two_transformed_corners:
+    max_x = max(max_x, point[0])
+    max_y = max(max_y, point[1])
+    min_x = min(min_x, point[0])
+    min_y = min(min_y, point[1])
+
+max_x = int(max_x)
+min_x = int(min_x)
+max_y = int(max_y)
+min_y = int(min_y)
+
+car_two_transformed_width = int(np.floor(max_x - min_x))
+car_two_transformed_height = int(np.floor(max_y - min_y))
+car_two_transformed = np.zeros((car_two_transformed_width + 2, car_two_transformed_height + 2, 3), dtype=np.uint8)
+for i in range(min_x, max_x):
+    for j in range(min_y, max_y):
+        x = c1_c4[0] * i + c1_c4[1] * j + c1_c4[2] * i * j + c1_c4[3]
+        y = c5_c8[0] * i + c5_c8[1] * j + c5_c8[2] * i * j + c5_c8[3]
+        if not (x < 0 or y < 0 or x >= car_two.shape[0] or y >= car_two.shape[1]):
+            car_two_transformed[i - min_x][j - min_y] = car_two[int(x)][int(y)]
+
+new_image_width = int(round(max_x))
+new_image_height = int(round(max_y))
 new_image = np.zeros((new_image_width + 1, new_image_height + 1, 3), dtype=np.uint8)
 for i in range(new_image_width):
     for j in range(new_image_height):
@@ -41,5 +69,5 @@ for i in range(new_image_width):
         if -1 < i < 750 and -1 < j < 1000:
             new_image[i][j] = car_one[i][j]
 
-cv.imshow("new_two", new_image)
-cv.waitKey(0)
+cv.imwrite("../output/car_two_transformed.jpg", car_two_transformed)
+cv.imwrite("../output/panaroma_two.jpg", new_image)

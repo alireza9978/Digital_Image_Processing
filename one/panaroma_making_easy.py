@@ -11,10 +11,10 @@ image_two = np.array([[480, 341], [333, 337], [406, 122], [418, 383],
                       [409, 513], [361, 26], [490, 511], [479, 136]])  # car two
 
 dif = np.array(np.round(np.mean(image_one - image_two, axis=0)))
+new_car_avg = np.zeros((int(car_one.shape[0] - dif[0]), int(car_one.shape[1] + dif[1]), 3), dtype=np.uint8)
 new_car = np.zeros((int(car_one.shape[0] - dif[0]), int(car_one.shape[1] + dif[1]), 3), dtype=np.uint8)
+
 dif = np.array(dif, dtype=np.int)
-print(new_car.shape)
-print(dif)
 for i in range(new_car.shape[0]):
     for j in range(new_car.shape[1]):
         i_one = i + dif[0]
@@ -29,15 +29,21 @@ for i in range(new_car.shape[0]):
         if -1 < i_two < car_two.shape[0] and -1 < j_two < car_two.shape[1]:
             value_two = car_two[i_two][j_two]
 
+        if value_one is not None:
+            new_car[i][j] = value_one
+        if value_two is not None:
+            new_car[i][j] = value_two
+
         if value_two is not None and value_one is not None:
-            new_car[i][j] = np.array(
+            new_car_avg[i][j] = np.array(
                 [int((int(value_one[0]) + int(value_two[0])) / 2),
                  int((int(value_one[1]) + int(value_two[1])) / 2),
                  int((int(value_one[2]) + int(value_two[2])) / 2)], dtype=np.uint8)
         elif value_one is not None:
-            new_car[i][j] = value_one
+            new_car_avg[i][j] = value_one
         elif value_two is not None:
-            new_car[i][j] = value_two
+            new_car_avg[i][j] = value_two
 
-cv.imshow("new", new_car)
-cv.waitKey(0)
+cv.imwrite("../output/panaroma_one.jpg", new_car)
+cv.imwrite("../output/panaroma_one_avg.jpg", new_car_avg)
+
