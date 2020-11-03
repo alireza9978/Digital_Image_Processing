@@ -1,14 +1,21 @@
+# روش دوم
+
 import cv2 as cv
 import numpy as np
 from sympy import symbols, Eq, solve
 
+# خواند تصاویر
 car_one = cv.imread('../data/Car1.jpg')
 car_two = cv.imread('../data/Car2.jpg')
 
+# نقاطی از دو تصویر که مشابه هستند
+# در ابتدا از ۴ نقطه‌ی بالا استفاده شد که خروجی خوب نبود بعد از ۴ تای اتهایی هر لیست استفده کردم
 image_one = np.array([[462, 759], [313, 753], [389, 545], [399, 802],
                       [389, 941], [348, 457], [475, 940], [459, 560]])  # car one
 image_two = np.array([[480, 341], [333, 337], [406, 122], [418, 383],
                       [409, 513], [361, 26], [490, 511], [479, 136]])  # car two
+
+# محاسبه‌ی ضرایب برای تبدیل
 coe = []
 b = []
 c = []
@@ -19,9 +26,11 @@ for i in range(4, 8):
 coe = np.array(coe)
 b = np.array(b)
 c = np.array(c)
+# ضرایب
 c1_c4 = np.linalg.inv(coe).dot(b)
 c5_c8 = np.linalg.inv(coe).dot(c)
 
+# محاسبه ۴ گوشه تصویر خروجی
 image_two_corners = [[0, 0], [0, car_two.shape[0]], [car_two.shape[1], 0], [car_two.shape[0], car_two.shape[1]]]
 image_two_transformed_corners = []
 for point in image_two_corners:
@@ -46,9 +55,10 @@ min_x = int(min_x)
 max_y = int(max_y)
 min_y = int(min_y)
 
+# محاسبه و تبدیل تصویر دوم
 car_two_transformed_width = int(np.floor(max_x - min_x))
 car_two_transformed_height = int(np.floor(max_y - min_y))
-car_two_transformed = np.zeros((car_two_transformed_width + 2, car_two_transformed_height + 2, 3), dtype=np.uint8)
+car_two_transformed = np.zeros((car_two_transformed_width + 1, car_two_transformed_height + 1, 3), dtype=np.uint8)
 for i in range(min_x, max_x):
     for j in range(min_y, max_y):
         x = c1_c4[0] * i + c1_c4[1] * j + c1_c4[2] * i * j + c1_c4[3]
@@ -56,18 +66,23 @@ for i in range(min_x, max_x):
         if not (x < 0 or y < 0 or x >= car_two.shape[0] or y >= car_two.shape[1]):
             car_two_transformed[i - min_x][j - min_y] = car_two[int(x)][int(y)]
 
-new_image_width = int(round(max_x))
-new_image_height = int(round(max_y))
+# ایجاد تصویر نهایی
+new_image_width = int(np.floor(max_x - min_x))
+new_image_height = int(np.floor(max_y - min_y))
 new_image = np.zeros((new_image_width + 1, new_image_height + 1, 3), dtype=np.uint8)
-for i in range(new_image_width):
-    for j in range(new_image_height):
+# محاسبه مقدار هر پیکسل از تصویر نهایی
+for i in range(min_x, max_x):
+    for j in range(min_y, max_y):
         x = c1_c4[0] * i + c1_c4[1] * j + c1_c4[2] * i * j + c1_c4[3]
         y = c5_c8[0] * i + c5_c8[1] * j + c5_c8[2] * i * j + c5_c8[3]
 
+        v, w = i - min_x, j - min_y
         if not (x < 0 or y < 0 or x > car_two.shape[0] or y > car_two.shape[1]):
-            new_image[i][j] = car_two[int(x)][int(y)]
+            new_image[v][w] = car_two[int(x)][int(y)]
         if -1 < i < 750 and -1 < j < 1000:
-            new_image[i][j] = car_one[i][j]
+            new_image[v][w] = car_one[i][j]
 
+# ذخیره سازی تصویر تبدیل شده
 cv.imwrite("../output/car_two_transformed.jpg", car_two_transformed)
+# ذخیره‌سازی تصویر پانوراما
 cv.imwrite("../output/panaroma_two.jpg", new_image)

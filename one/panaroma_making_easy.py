@@ -1,19 +1,26 @@
+# روش اول
+
 import cv2 as cv
 import numpy as np
 
+# خواند تصاویر
 car_one = cv.imread('../data/Car1.jpg')
 car_two = cv.imread('../data/Car2.jpg')
-print(car_one.shape)
-print(car_two.shape)
+
+# نقاطی از دو تصویر که مشابه هستند
 image_one = np.array([[462, 759], [313, 753], [389, 545], [399, 802],
                       [389, 941], [348, 457], [475, 940], [459, 560]])  # car one
 image_two = np.array([[480, 341], [333, 337], [406, 122], [418, 383],
                       [409, 513], [361, 26], [490, 511], [479, 136]])  # car two
 
+# محاسبه‌ی اختلاف دو تصویر
 dif = np.array(np.round(np.mean(image_one - image_two, axis=0)))
+# ایجاد تصاویر نهایی
 new_car_avg = np.zeros((int(car_one.shape[0] - dif[0]), int(car_one.shape[1] + dif[1]), 3), dtype=np.uint8)
 new_car = np.zeros((int(car_one.shape[0] - dif[0]), int(car_one.shape[1] + dif[1]), 3), dtype=np.uint8)
 
+# مقدار دهی به نقاط تصاویر نهایی
+# یکی از تصاویر با محاسبه میانگین و دیگری با انتخاب یک تصویر ساخته شده است
 dif = np.array(dif, dtype=np.int)
 for i in range(new_car.shape[0]):
     for j in range(new_car.shape[1]):
