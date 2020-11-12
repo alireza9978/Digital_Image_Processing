@@ -1,8 +1,10 @@
 import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
+
 # تعداد سطوح خاکستری برای هر مثال
 levels = [8, 16, 32, 64, 128]
+
 
 # تابعی برای ساختن histogram, pdf, cdf
 def make_histogram_pdf_cdf(input_image):
