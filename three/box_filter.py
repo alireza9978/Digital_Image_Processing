@@ -7,7 +7,7 @@ image = cv.imread("../data/Elaine.jpg", cv.IMREAD_GRAYSCALE)
 filter_size = 3
 box_filter = np.ones([filter_size, filter_size], dtype=np.uint8)
 new_image = image
-for i in range(10):
+for i in range(100):
     new_image = apply_filter(new_image, box_filter)
-    if (i + 1) % 5 == 0:
+    if (i + 1) % 10 == 0:
         cv.imwrite("../output/filtered_{}_time.jpg".format(i + 1), new_image)

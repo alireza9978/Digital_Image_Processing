@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 
@@ -17,7 +19,32 @@ def apply_filter(image, input_filter):
             for h in range(input_filter.shape[0]):
                 for k in range(input_filter.shape[1]):
                     temp_sum += (input_filter[h][k] * image_sample[h][k])
-            output_image[i][j] = int(temp_sum/filter_sum)
+            output_image[i][j] = int(temp_sum / filter_sum)
     return output_image
 
 
+def apply_salt_and_pepper_noise(image, density):
+    row_change_count = int(image.shape[1] * density)
+    row_population = range(image.shape[1])
+    output_image = np.copy(image)
+    for row in output_image:
+        rnd = random.choices(row_population, k=row_change_count)
+        rnd_state = random.choices([True, False], k=row_change_count)
+        for i in range(row_change_count):
+            if rnd_state[i]:
+                row[rnd[i]] = 255
+            else:
+                row[rnd[i]] = 0
+    return output_image
+
+
+def median_filter(image, filter_size):
+    output_image = np.zeros(image.shape, dtype=np.uint8)
+    filter_size_half = int(filter_size / 2)
+    sorted_index_median = int((filter_size * filter_size) / 2)
+    for i in range(filter_size_half, image.shape[0] - filter_size_half):
+        for j in range(filter_size_half, image.shape[1] - filter_size_half):
+            image_sample = np.take(np.take(image, range(i - filter_size_half, i + filter_size_half + 1), axis=0),
+                                   range(j - filter_size_half, j + filter_size_half + 1), axis=1)
+            output_image[i][j] = sorted(image_sample.flatten())[sorted_index_median]
+    return output_image
