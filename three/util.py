@@ -38,6 +38,19 @@ def apply_salt_and_pepper_noise(image, density):
     return output_image
 
 
+def median_filter_padded(image, filter_size):
+    filter_size_half = int(filter_size / 2)
+    padded_image = np.pad(image, filter_size_half, mode='edge')
+    output_image = np.zeros(image.shape, dtype=np.uint8)
+    sorted_index_median = int((filter_size * filter_size) / 2)
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            image_sample = np.take(np.take(padded_image, range(i, i + filter_size), axis=0),
+                                   range(j, j + filter_size), axis=1)
+            output_image[i][j] = sorted(image_sample.flatten())[sorted_index_median]
+    return output_image
+
+
 def median_filter(image, filter_size):
     output_image = np.zeros(image.shape, dtype=np.uint8)
     filter_size_half = int(filter_size / 2)

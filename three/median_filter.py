@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 
-from three.util import apply_salt_and_pepper_noise, median_filter
+from three.util import apply_salt_and_pepper_noise, median_filter,median_filter_padded
 
 image = cv.imread("../data/Elaine.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -15,6 +15,8 @@ for density in noise_density:
     for windows in windows_size:
         filtered_image = median_filter(noised_image, windows)
         cv.imwrite("../output/Elaine_pepper&salt_{}_filtered_size_{}.jpg".format(density, windows), filtered_image)
+        filtered_image = median_filter_padded(noised_image, windows)
+        cv.imwrite("../output/Elaine_pepper&salt_{}_padded_filtered_size_{}.jpg".format(density, windows), filtered_image)
         this_noise_result.append(np.mean(np.square(np.subtract(image, filtered_image))))
     results.append(this_noise_result)
 
