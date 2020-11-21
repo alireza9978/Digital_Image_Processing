@@ -4,10 +4,6 @@ import numpy as np
 
 
 def apply_filter(image, input_filter):
-    filter_sum = 0
-    for row in input_filter:
-        for data in row:
-            filter_sum += data
     filter_size = input_filter.shape[0]
     padded_image = np.pad(image, int(filter_size / 2), mode='edge')
     output_image = np.zeros(image.shape, dtype=np.uint8)
@@ -19,7 +15,7 @@ def apply_filter(image, input_filter):
             for h in range(input_filter.shape[0]):
                 for k in range(input_filter.shape[1]):
                     temp_sum += (input_filter[h][k] * image_sample[h][k])
-            output_image[i][j] = int(temp_sum / filter_sum)
+            output_image[i][j] = abs(int(temp_sum))
     return output_image
 
 
@@ -61,3 +57,5 @@ def median_filter(image, filter_size):
                                    range(j - filter_size_half, j + filter_size_half + 1), axis=1)
             output_image[i][j] = sorted(image_sample.flatten())[sorted_index_median]
     return output_image
+
+# def apply_gaussian_noise(image,)
