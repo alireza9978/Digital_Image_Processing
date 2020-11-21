@@ -15,7 +15,7 @@ for i in range(len(images)):
     image = images[i]
     for filter_size in filters_size:
         box_filter = np.ones([filter_size, filter_size], dtype=np.uint8) / (filter_size * filter_size)
-        new_image = apply_filter(one, box_filter)
+        new_image = apply_filter(image, box_filter)
         cv.imwrite("../output/elaine_{}_fixed_gaussian_box_{}.jpg".format(images_noise[i], filter_size), new_image)
     for filter_size in filters_size:
         filtered_image = median_filter(image, filter_size)
