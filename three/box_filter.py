@@ -3,7 +3,7 @@ import numpy as np
 
 from three.util import apply_filter
 
-image = cv.imread("../data/Elaine.jpg", cv.IMREAD_GRAYSCALE)
+image = cv.imread("../data/Lena.bmp", cv.IMREAD_GRAYSCALE)
 filter_size = 3
 box_filter = np.ones([filter_size, filter_size], dtype=np.uint8) / (filter_size * filter_size)
 new_image = image
