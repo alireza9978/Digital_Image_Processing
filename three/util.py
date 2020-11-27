@@ -57,5 +57,3 @@ def median_filter(image, filter_size):
                                    range(j - filter_size_half, j + filter_size_half + 1), axis=1)
             output_image[i][j] = sorted(image_sample.flatten())[sorted_index_median]
     return output_image
-
-# def apply_gaussian_noise(image,)
