@@ -4,7 +4,7 @@ import numpy as np
 image = cv.imread("../data/Lena.bmp", cv.IMREAD_GRAYSCALE)
 IMAGE_SIZE = image.shape
 
-fft_image = np.fft.fftshift(np.fft.fft2(image))
+fft_image = np.fft.fft2(image)
 T = [1 / 4, 1 / 8]
 N = fft_image.shape[0]
 outputs = []
@@ -26,12 +26,12 @@ for t in T:
 
 for i in range(2):
     for j in range(5):
-        cv.imwrite("../output/lena_filtered_{}_t_{}.jpg".format(j, i),
-                   np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[i][j]))))
+        cv.imwrite("../output/lena_without_shift_filtered_{}_t_{}.jpg".format(j, i),
+                   np.abs(np.fft.ifft2(outputs[i][j])))
 
-# temp = np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[0][2])) - np.fft.ifft2(np.fft.ifftshift(outputs[0][3])))
-# cv.imwrite("../output/lena_filtered_diff.jpg", temp)
-# temp = np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[0][1])) - np.fft.ifft2(np.fft.ifftshift(outputs[0][2])))
-# cv.imwrite("../output/lena_filtered_diff_2.jpg", temp)
-# temp = np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[0][0])) - np.fft.ifft2(np.fft.ifftshift(outputs[0][1])))
-# cv.imwrite("../output/lena_filtered_diff_3.jpg", temp)
+temp = np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[0][2])) - np.fft.ifft2(np.fft.ifftshift(outputs[0][3])))
+cv.imwrite("../output/lena_filtered_diff.jpg", temp)
+temp = np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[0][1])) - np.fft.ifft2(np.fft.ifftshift(outputs[0][2])))
+cv.imwrite("../output/lena_filtered_diff_2.jpg", temp)
+temp = np.abs(np.fft.ifft2(np.fft.ifftshift(outputs[0][0])) - np.fft.ifft2(np.fft.ifftshift(outputs[0][1])))
+cv.imwrite("../output/lena_filtered_diff_3.jpg", temp)

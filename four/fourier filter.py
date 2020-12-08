@@ -3,13 +3,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def plot_spectrum(im_fft):
-    from matplotlib.colors import LogNorm
-    # A logarithmic colormap
-    plt.imshow(np.abs(im_fft), norm=LogNorm(vmin=5))
-    plt.colorbar()
-
-
 def save_filters(mag_spectrum):
     for i in range(3):
         plt.subplot(1, 3, i + 1)
@@ -26,6 +19,7 @@ def save_filters(mag_spectrum):
 image = cv.imread("../data/Barbara.jpg", cv.IMREAD_GRAYSCALE)
 IMAGE_SIZE = image.shape
 filter_a = np.array([[1, 2, 1], [2, 4, 2], [1, 2, 1]]) / 16
+filter_a_separate = np.array([1, 2, 1]) / 4
 filter_b = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
 filter_c = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
 filters = [filter_a, filter_b, filter_c]
@@ -47,6 +41,21 @@ for temp_filter in mag_spectrum:
             output[i][j] = fft_image[i][j] * temp_filter[i][j]
     filtered_images.append(np.fft.ifft2(np.fft.ifftshift(output)))
 
+output = np.zeros(fft_image.shape, dtype=np.complex128)
+padded_filter_separate = np.fft.fftshift(np.fft.fft(np.pad(filter_a_separate, [254, 255], constant_values=0)))
+padded_filter_bigger = np.zeros(fft_image.shape, dtype=np.complex128)
+for i in range(fft_image.shape[0]):
+    for j in range(fft_image.shape[1]):
+        padded_filter_bigger[i][j] = padded_filter_separate[i] * padded_filter_separate[j]
+padded_filter_separate = np.log(1 + np.abs(padded_filter_bigger))
+for i in range(fft_image.shape[0]):
+    for j in range(fft_image.shape[1]):
+        output[i][j] = fft_image[i][j] * padded_filter_separate[i][j]
+output = np.fft.ifft2(np.fft.ifftshift(output))
+
+print(np.abs(output - filtered_images[0]).mean())
+
 cv.imwrite("../output/Barbara_filtered_a.jpg", np.abs(filtered_images[0]))
 cv.imwrite("../output/Barbara_filtered_b.jpg", np.abs(filtered_images[1]))
 cv.imwrite("../output/Barbara_filtered_c.jpg", np.abs(filtered_images[2]))
+cv.imwrite("../output/Barbara_filtered_a_separate.jpg", np.abs(output))
