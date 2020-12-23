@@ -3,7 +3,7 @@ import numpy as np
 
 
 def quantize(array, quantize_level):
-    my_array = (array.astype(np.float32) / 255) * quantize_level
+    my_array = (array.astype(np.float32) / 255) * (quantize_level - 1)
     my_array = np.round(my_array)
     my_array = (my_array * (255 / (quantize_level - 1))).astype(np.uint8)
     return my_array
