@@ -10,9 +10,9 @@ cv.imwrite("../output/pepper_red_to_gray.jpg", R)
 cv.imwrite("../output/pepper_green_to_gray.jpg", G)
 cv.imwrite("../output/pepper_blue_to_gray.jpg", B)
 
-R = R.astype(np.int16)
-G = G.astype(np.int16)
-B = B.astype(np.int16)
+R = R.astype(np.float32)
+G = G.astype(np.float32)
+B = B.astype(np.float32)
 
 H = []
 S = []
@@ -26,7 +26,7 @@ for i in range(pepper_image.shape[0]):
         theta = 0
         if bot > 0:
             temp = (0.5 * (R[i, j] - G[i, j] + R[i, j] - B[i, j])) / np.sqrt(bot)
-            theta = np.arccos(temp)
+            theta = np.arccos(temp) * 180 / np.pi
 
         h = theta if B[i, j] <= G[i, j] else 360 - theta
         bot = (R[i, j] + G[i, j] + B[i, j])
@@ -41,6 +41,14 @@ for i in range(pepper_image.shape[0]):
     S.append(s_row)
     I.append(i_row)
 
-cv.imwrite("../output/pepper_H.jpg", np.array(H, dtype=np.uint8))
-cv.imwrite("../output/pepper_S.jpg", (np.array(S) * 255).astype(np.uint8))
-cv.imwrite("../output/pepper_I.jpg", np.array(I, dtype=np.uint8))
+H = np.array(H, dtype=np.float32)
+S = np.array(S, dtype=np.float32)
+I = np.array(I, dtype=np.float32)
+
+H = (H / H.max()) * 255
+S = (S / S.max()) * 255
+I = (I / I.max()) * 255
+
+cv.imwrite("../output/pepper_H.jpeg", H)
+cv.imwrite("../output/pepper_S.jpeg", S)
+cv.imwrite("../output/pepper_I.jpeg", I)
