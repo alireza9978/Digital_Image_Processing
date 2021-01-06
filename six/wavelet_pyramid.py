@@ -16,8 +16,6 @@ image = cv.imread("../data/Lena.bmp", cv.IMREAD_GRAYSCALE)
 
 # Wavelet transform of image, and plot approximation and details
 LL = image
-titles = ['Approximation', ' Horizontal detail',
-          'Vertical detail', 'Diagonal detail']
 for level in range(pyramid_level):
     LL, (LH, HL, HH) = pywt.dwt2(LL, 'haar')
     LL = normalize(LL)
