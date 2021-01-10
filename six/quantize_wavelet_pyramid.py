@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-import pywt.data
+import pywt
 
 
 def quantize(input_image):
@@ -9,6 +9,7 @@ def quantize(input_image):
 
 # Load image
 image = cv.imread("../data/Lena.bmp", cv.IMREAD_GRAYSCALE)
+cv.imwrite("../output/lena_gray.jpg", image)
 
 pyramid_level = 3
 
@@ -22,11 +23,7 @@ for i in range(pyramid_level):
     HL = quantize(HL)
     HH = quantize(HH)
     reconstruct_image = pywt.idwt2((LL, (LH, HL, HH)), 'haar').astype(np.uint8)
-    cv.imwrite("../output/quantized_wavelet.jpg", reconstruct_image)
-    cv.imwrite("../output/quantized_wavelet_LL.jpg", LL)
-    cv.imwrite("../output/quantized_wavelet_LH.jpg", LH)
-    cv.imwrite("../output/quantized_wavelet_HL.jpg", HL)
-    cv.imwrite("../output/quantized_wavelet_HH.jpg", HH)
+    cv.imwrite("../output/quantized_and_reconstructed_wavelet_level_{}.jpg".format(i + 1), reconstruct_image)
     PSNR = cv.PSNR(OLD_LL, reconstruct_image)
     print("level_{}_image_size_{}".format(i + 1, OLD_LL.shape[0]), PSNR)
     TEMP_LL = TEMP_LL - TEMP_LL.min()

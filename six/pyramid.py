@@ -50,9 +50,12 @@ image = cv.imread("../data/Lena.bmp", cv.IMREAD_GRAYSCALE)
 box_filter = np.ones([filter_size, filter_size], dtype=np.uint8) / (filter_size * filter_size)
 temp_image = image
 cv.imwrite("../output/pyramid_level_{}_main.jpg".format(0), temp_image)
+i = 0
 for i in range(pyramid_level):
     filtered_temp_image = apply_filter(temp_image, box_filter)
     temp_image, high_pass = decomposition(temp_image, filtered_temp_image)
     cv.imwrite("../output/pyramid_level_{}_main.jpg".format(i + 1), temp_image)
     cv.imwrite("../output/pyramid_level_{}_high_pass.jpg".format(i + 1), high_pass)
     temp_image = down_sample_replication(temp_image)
+
+cv.imwrite("../output/pyramid_level_{}_main.jpg".format(pyramid_level + 1), temp_image)
